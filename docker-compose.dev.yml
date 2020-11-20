@@ -1,0 +1,64 @@
+version: '3.7'
+
+networks:
+    local:
+
+services:
+    mysql: 
+        image: mysql
+        container_name: mysql
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - 3306:3306
+        # volumes:
+        #     - ./mysql:/var/lib/mysql
+        command: --max_allowed_packet=32505856
+        environment: 
+            MYSQL_DATABASE: d
+            MYSQL_USER: d
+            MYSQL_PASSWORD: d
+            MYSQL_ROOT_PASSWORD: secret
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - local
+    postgres:
+        image: postgres
+        container_name: postgres
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - 5432:5432
+        # volumes: 
+        #     - ./postgres:/var/lib/postgresql/data
+        environment: 
+            POSTGRES_USER: d
+            POSTGRES_PASSWORD: d
+        networks:
+            - local
+    myadmin:
+        image: phpmyadmin
+        container_name: phpmyadmin
+        ports: 
+            - 81:80
+        networks: 
+            - local
+        restart: always
+        environment: 
+            PMA_HOST: mysql
+        depends_on: 
+            - mysql
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        ports: 
+            - 51:5050
+        networks: 
+            - local
+        environment: 
+            PGADMIN_DEFAULT_EMAIL: d@localhost
+            PGADMIN_DEFAULT_PASSWORD: d
+            PGADMIN_LISTEN_PORT: 5050
+        depends_on: 
+            - postgres
